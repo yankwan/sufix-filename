@@ -10,7 +10,9 @@ program
     .version('0.1.0')
     .option('--replace <value>', 'Replace filename to the value, value is required')
     .option('--suffix [value]', 'Add suffix, value is optional, default value is timestamp')
+    .option('--suffix-auto [index]', 'Add auto suffix from index, default index is 0')
     .option('--prefix [value]', 'Add prefix, value is optional, default value is timestamp')
+    .option('--prefix-auto [index]', 'Add auto prefix from index, default index is 0')
     .option('--sep <value>', 'Add separator, value is optional, default value is none')
     .option('--encode <items>', 'Use user encode type to encode suffix/prefix, value is required')
     .option('--encode-join <items>', 'Use user encode type to encode suffix/prefix and join the encode result, value is required')
@@ -41,6 +43,12 @@ let curDir = path.join(args[0]);
 visit(curDir, (filePath, fileName) => {
     let oldPath = path.join(filePath, fileName);
     let newPath;
+
+    // 替换文件名
+    if (program.replace) {
+        let tmp = fileName.split('.');
+        fileName = program.replace + '.' + tmp[tmp.length - 1];
+    }
 
     // 添加文件名后缀
     if (program.suffix) {
@@ -136,8 +144,7 @@ function visit (filePath, cb) {
     files.forEach(fileName => {
         var stats = fs.statSync(path.join(filePath, fileName));
         if (stats.isDirectory()) visit(path.join(filePath, fileName), cb);
-        else 
-            cb(filePath, fileName);
+        else cb(filePath, fileName);
     })
     
 }
